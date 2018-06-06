@@ -25,7 +25,7 @@ If you just want to run the standard benchmarks we run for each release, there i
   % pip install -r requirements.txt
   % ./run_benchmarks.sh
 
-This runs the benchmarks and generates the reStructuredText files that are referenced by ciso8601's ``README.rst``_.
+This runs the benchmarks and generates reStructuredText files. The contents of these files can be copy-pasted into ciso8601's ``README.rst``_.
 
 .. _``README.rst``: https://github.com/closeio/ciso8601/blob/master/README.rst
 
