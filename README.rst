@@ -62,6 +62,7 @@ Benchmark
 
 Parsing a timestamp with no time zone information (ex. ``2014-01-09T21:48:00``):
 
+.. <include:benchmark_with_no_time_zone.rst>
 .. table::
 
   +------------+----------+----------+----------+----------+-----------------------------------+
@@ -98,8 +99,11 @@ Parsing a timestamp with no time zone information (ex. ``2014-01-09T21:48:00``):
 
 ciso8601 takes 122 nsec, which is **5.8122x faster than udatetime**, the next fastest ISO 8601 parser in this comparison.
 
+.. </include:benchmark_with_no_time_zone.rst>
+
 Parsing a timestamp with time zone information (ex. ``2014-01-09T21:48:00-05:30``):
 
+.. <include:benchmark_with_time_zone.rst>
 .. table::
 
   +------------+----------+----------+----------+----------+-----------------------------------+
@@ -136,6 +140,9 @@ Parsing a timestamp with time zone information (ex. ``2014-01-09T21:48:00-05:30`
 
 ciso8601 takes 279 nsec, which is **3.1076x faster than udatetime**, the next fastest ISO 8601 parser in this comparison.
 
+.. </include:benchmark_with_time_zone.rst>
+
+.. <include:benchmark_module_versions.rst>
 Tested on Linux 3.10.0-693.21.1.el7.x86_64 using the following modules:
 
 .. code:: python
@@ -154,6 +161,8 @@ Tested on Linux 3.10.0-693.21.1.el7.x86_64 using the following modules:
   str2date==0.905
   udatetime==0.0.16
   zulu==0.12.0
+
+.. </include:benchmark_module_versions.rst>
 
 For full benchmarking details (or to run the benchmark yourself), see `benchmarking/README.rst`_
 
