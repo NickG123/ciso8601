@@ -155,9 +155,9 @@ Tested on Linux 3.10.0-693.21.1.el7.x86_64 using the following modules:
   udatetime==0.0.16
   zulu==0.12.0
 
-For full benchmarking details (or to run the benchmark yourself), see ``benchmarking/README.rst``_
+For full benchmarking details (or to run the benchmark yourself), see `benchmarking/README.rst`_
 
-.. _``benchmarking/README.rst``: https://github.com/closeio/ciso8601/blob/master/benchmarking/README.rst
+.. _`benchmarking/README.rst`: https://github.com/closeio/ciso8601/blob/master/benchmarking/README.rst
 
 Dependency on pytz (Python 2)
 -----------------------------
