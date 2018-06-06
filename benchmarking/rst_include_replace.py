@@ -29,6 +29,7 @@ def replace_include(target_filepath, include_file, source_filepath):
         for line in target_lines:
             if start_block_regex.match(line):
                 fout.write(line)
+                fout.write("\n")  # rST requires a blank line after comment lines
                 for replacement_line in replacement_lines:
                     fout.write(replacement_line)
                 next_line = next(target_lines)
