@@ -96,7 +96,7 @@ Parsing a timestamp with no time zone information (ex. ``2014-01-09T21:48:00``):
   |moment      |2 msec    |2.06 msec |3.1 msec  |2.39 msec |16316x                             |
   +------------+----------+----------+----------+----------+-----------------------------------+
 
-``ciso8601`` takes 122 nsec, which is **5.8122x faster than ``udatetime``**, the next fastest ISO 8601 parser in this comparison.
+ciso8601 takes 122 nsec, which is **5.8122x faster than udatetime**, the next fastest ISO 8601 parser in this comparison.
 
 Parsing a timestamp with time zone information (ex. ``2014-01-09T21:48:00-05:30``):
 
@@ -134,7 +134,7 @@ Parsing a timestamp with time zone information (ex. ``2014-01-09T21:48:00-05:30`
   |moment      |1.03 sec  |975 msec  |1.36 sec  |1.22 sec  |3.6908e+06x                        |
   +------------+----------+----------+----------+----------+-----------------------------------+
 
-``ciso8601`` takes 279 nsec, which is **3.1076x faster than ``udatetime``**, the next fastest ISO 8601 parser in this comparison.
+ciso8601 takes 279 nsec, which is **3.1076x faster than udatetime**, the next fastest ISO 8601 parser in this comparison.
 
 Tested on Linux 3.10.0-693.21.1.el7.x86_64 using the following modules:
 

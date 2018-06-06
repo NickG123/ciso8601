@@ -92,9 +92,9 @@ def main(results_directory, output_file, compare_to, include_call, module_versio
         writer.write_table()
 
         if modules_by_modern_speed[0] == compare_to:
-            fout.write(f"``{compare_to}`` takes {format_duration(all_results[most_modern_python][compare_to])}, which is **{format_relative(all_results[most_modern_python][modules_by_modern_speed[1]], all_results[most_modern_python][compare_to])} faster than ``{modules_by_modern_speed[1]}``**, the next fastest ISO 8601 parser in this comparison.\n")
+            fout.write(f"{compare_to} takes {format_duration(all_results[most_modern_python][compare_to])}, which is **{format_relative(all_results[most_modern_python][modules_by_modern_speed[1]], all_results[most_modern_python][compare_to])} faster than {modules_by_modern_speed[1]}**, the next fastest ISO 8601 parser in this comparison.\n")
         else:
-            fout.write(f"``{compare_to}`` takes {format_duration(all_results[most_modern_python][compare_to])}, which is **{format_relative(all_results[most_modern_python][compare_to], all_results[most_modern_python][modules_by_modern_speed[0]])} slower than ``{modules_by_modern_speed[0]}``**, the fastest ISO 8601 parser in this comparison.\n")
+            fout.write(f"{compare_to} takes {format_duration(all_results[most_modern_python][compare_to])}, which is **{format_relative(all_results[most_modern_python][compare_to], all_results[most_modern_python][modules_by_modern_speed[0]])} slower than {modules_by_modern_speed[0]}**, the fastest ISO 8601 parser in this comparison.\n")
 
     with open(os.path.join(os.path.dirname(output_file), module_version_output), 'w') as fout:
         fout.write(f"Tested on {platform.system()} {platform.release()} using the following modules:\n")
