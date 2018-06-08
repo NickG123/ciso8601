@@ -17,7 +17,7 @@ ISO_8601_MODULES = {
     "isodate": ('import isodate', "isodate.parse_datetime('{timestamp}')"),
     "maya": ('import maya', "maya.parse('{timestamp}')"),
     "moment": ('import moment', "moment.date('{timestamp}')"),
-    "pendulum": ('import pendulum', "pendulum.parse('{timestamp}')"),
+    "pendulum": ('from pendulum.parsing.parser import parse_iso8601', "parse_iso8601('{timestamp}')"),
     "PySO8601": ('import PySO8601', "PySO8601.parse('{timestamp}')"),
     "str2date": ('from str2date import str2date', "str2date('{timestamp}')"),
     "zulu": ('import zulu', "zulu.parse('{timestamp}')"),
