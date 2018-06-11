@@ -6,7 +6,9 @@ import pytablewriter
 import re
 import sys
 
-from collections import defaultdict
+from collections import defaultdict, namedtuple
+
+Result = namedtuple('Result', ['timing', 'parsed_value', 'exception', 'matched_expected'])
 
 FILENAME_REGEX_RAW = r"benchmark_timings_python(\d)(\d).csv"
 FILENAME_REGEX = re.compile(FILENAME_REGEX_RAW)
@@ -56,10 +58,20 @@ def format_used_module_versions(module_versions_used):
     return results
 
 
+def format_result(result):
+    if result.exception:
+        return f"Raised  ``{result.exception}`` Exception"
+    elif not result.matched_expected:
+        return f"**Incorrect Result** (``{result.parsed_value}``)"
+    else:
+        return format_duration(result.timing)
+
+
 def main(results_directory, output_file, compare_to, include_call, module_version_output):
     calling_code = {}
     timestamps = set()
     all_results = defaultdict(dict)
+    timing_results = defaultdict(dict)
 
     for parent, _dirs, files in os.walk(results_directory):
         files_to_process = [f for f in files if FILENAME_REGEX.match(f)]
@@ -68,23 +80,28 @@ def main(results_directory, output_file, compare_to, include_call, module_versio
                 reader = csv.reader(fin, delimiter=",", quotechar='"')
                 major, minor, timestamp = next(reader)
                 timestamps.add(timestamp)
-                for module, _setup, stmt, count, time_taken in reader:
-                    all_results[(major, minor)][module] = float(time_taken) / int(count)
+                for module, _setup, stmt, parse_result, count, time_taken, matched, exception in reader:
+                    all_results[(major, minor)][module] = Result(float(time_taken) / int(count),
+                                                                 parse_result,
+                                                                 exception,
+                                                                 True if matched == "True" else False
+                                                                 )
+                    timing_results[(major, minor)][module] = all_results[(major, minor)][module].timing
                     calling_code[module] = f"``{stmt.format(timestamp=timestamp)}``"
 
     if len(timestamps) > 1:
         raise NotImplementedError(f"Found a mix of files in the results directory. Found files that represent the parsing of {timestamps}. Support for handling multiple timestamps is not implemented.")
 
-    all_modules = set([module for value in all_results.values() for module in value.keys()])
-    python_versions_by_modernity = sorted(all_results.keys(), reverse=True)
+    all_modules = set([module for value in timing_results.values() for module in value.keys()])
+    python_versions_by_modernity = sorted(timing_results.keys(), reverse=True)
     most_modern_python = python_versions_by_modernity[0]
-    modules_by_modern_speed = sorted(all_modules, key=lambda module: all_results[most_modern_python][module])
+    modules_by_modern_speed = sorted(all_modules, key=lambda module: timing_results[most_modern_python][module])
 
     writer = pytablewriter.RstGridTableWriter()
     writer.header_list = ["Module"] + (["Call"] if include_call else []) + ["Python {}".format(".".join(key)) for key in python_versions_by_modernity] + [f"Relative Slowdown (versus {compare_to})"]
     writer.type_hint_list = [pytablewriter.String] * len(writer.header_list)
     writer.value_matrix = [
-        [module] + ([calling_code[module]] if include_call else []) + [format_duration(all_results[python_version][module]) for python_version in python_versions_by_modernity] + ([format_relative(all_results[most_modern_python][module], all_results[most_modern_python][compare_to])] if module != compare_to else []) for module in modules_by_modern_speed
+        [module] + ([calling_code[module]] if include_call else []) + [format_result(all_results[python_version][module]) for python_version in python_versions_by_modernity] + ([format_relative(timing_results[most_modern_python][module], timing_results[most_modern_python][compare_to])] if module != compare_to else []) for module in modules_by_modern_speed
     ]
 
     with open(output_file, 'w') as fout:
@@ -92,9 +109,9 @@ def main(results_directory, output_file, compare_to, include_call, module_versio
         writer.write_table()
 
         if modules_by_modern_speed[0] == compare_to:
-            fout.write(f"{compare_to} takes {format_duration(all_results[most_modern_python][compare_to])}, which is **{format_relative(all_results[most_modern_python][modules_by_modern_speed[1]], all_results[most_modern_python][compare_to])} faster than {modules_by_modern_speed[1]}**, the next fastest ISO 8601 parser in this comparison.\n")
+            fout.write(f"{compare_to} takes {format_duration(timing_results[most_modern_python][compare_to])}, which is **{format_relative(timing_results[most_modern_python][modules_by_modern_speed[1]], timing_results[most_modern_python][compare_to])} faster than {modules_by_modern_speed[1]}**, the next fastest ISO 8601 parser in this comparison.\n")
         else:
-            fout.write(f"{compare_to} takes {format_duration(all_results[most_modern_python][compare_to])}, which is **{format_relative(all_results[most_modern_python][compare_to], all_results[most_modern_python][modules_by_modern_speed[0]])} slower than {modules_by_modern_speed[0]}**, the fastest ISO 8601 parser in this comparison.\n")
+            fout.write(f"{compare_to} takes {format_duration(timing_results[most_modern_python][compare_to])}, which is **{format_relative(timing_results[most_modern_python][compare_to], timing_results[most_modern_python][modules_by_modern_speed[0]])} slower than {modules_by_modern_speed[0]}**, the fastest ISO 8601 parser in this comparison.\n")
 
     with open(os.path.join(os.path.dirname(output_file), module_version_output), 'w') as fout:
         fout.write(f"Tested on {platform.system()} {platform.release()} using the following modules:\n")
